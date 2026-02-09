@@ -13,11 +13,10 @@
   <depend>gz_ros2_control</depend>
   <depend>python3-numpy</depend>
   <depend>rclcpp</depend>
-  <depend>ros_gz</depend>
-  <depend>ros_gz_bridge</depend>
-  <depend>ros_gz_image</depend>
-  <depend>ros_gz_sim</depend>
   <depend>ros2_control</depend>
+  <depend>gazebo_ros</depend>
+  <depend>gazebo_ros2_control</depend>
+  <exec_depend>gazebo_plugins</exec_depend>
   <depend>ros2_controllers</depend>
   <depend>trajectory_msgs</depend>
   <depend>xacro</depend>

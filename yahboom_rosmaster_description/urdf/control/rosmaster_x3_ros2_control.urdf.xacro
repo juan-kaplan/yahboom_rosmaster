@@ -4,9 +4,7 @@
     <xacro:macro name="yahboom_rosmaster_ros2_control" params="prefix use_gazebo">
         <ros2_control name="RobotSystem" type="system">
             <hardware>
-                <xacro:if value="${use_gazebo}">
-                    <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-                </xacro:if>
+                <plugin>gazebo_ros2_control/GazeboSystem</plugin>
             </hardware>
 
             <joint name="${prefix}front_left_wheel_joint">

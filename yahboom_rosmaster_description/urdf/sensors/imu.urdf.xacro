@@ -65,7 +65,13 @@
                 <specular>${gazebo_material_specular}</specular>
             </material>
             <sensor name="${prefix}imu_sensor" type="imu">
-                <topic>${topic_name}</topic>
+                <plugin name="${prefix}imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+                    <ros>
+                        <namespace>${prefix}</namespace>
+                        <remapping>~/out:=${topic_name}</remapping>
+                    </ros>
+                    <initial_orientation_as_reference>false</initial_orientation_as_reference>
+                </plugin>
                 <update_rate>${update_rate}</update_rate>
                 <always_on>${always_on}</always_on>
                 <visualize>${visualize}</visualize>

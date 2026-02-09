@@ -137,12 +137,24 @@
     <link name="${prefix}${camera_name}_color_optical_frame"/>
 
     <gazebo reference="${prefix}${camera_name}_link">
-      <sensor name="${prefix}${camera_name}" type="rgbd_camera">
+      <sensor name="${prefix}${camera_name}" type="depth">
+        <plugin name="${prefix}${camera_name}_plugin" filename="libgazebo_ros_camera.so">
+          <ros>
+            <namespace>${prefix}</namespace>
+            <remapping>~/out:=${camera_name}</remapping>
+          </ros>
+          <camera_name>${camera_name}</camera_name>
+          <frame_name>${prefix}${camera_name}_depth_optical_frame</frame_name>
+          <hack_baseline>0.07</hack_baseline>
+          <min_depth>${clip_near}</min_depth>
+          <max_depth>${clip_far}</max_depth>
+        </plugin>
         <camera>
           <horizontal_fov>${horizontal_fov}</horizontal_fov>
           <image>
             <width>${image_width}</width>
             <height>${image_height}</height>
+            <format>R8G8B8</format>
           </image>
           <clip>
             <near>${clip_near}</near>
@@ -150,10 +162,9 @@
           </clip>
         </camera>
         <always_on>${always_on}</always_on>
-        <gz_frame_id>${prefix}${camera_name}_depth_optical_frame</gz_frame_id>
-        <topic>${camera_name}</topic>
         <update_rate>${update_rate}</update_rate>
         <visualize>${visualize}</visualize>
+        <gz_frame_id>${prefix}${camera_name}_depth_optical_frame</gz_frame_id>
       </sensor>
     </gazebo>
 
