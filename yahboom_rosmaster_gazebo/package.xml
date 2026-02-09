@@ -10,7 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>controller_manager</depend>
-  <depend>gz_ros2_control</depend>
+
   <depend>python3-numpy</depend>
   <depend>rclcpp</depend>
   <depend>ros2_control</depend>
@@ -20,7 +20,7 @@
   <depend>ros2_controllers</depend>
   <depend>trajectory_msgs</depend>
   <depend>xacro</depend>
-  <exec_depend>gz_ros2_control_demos</exec_depend>
+
   <exec_depend>rqt_robot_steering</exec_depend>
   <exec_depend>rviz_imu_plugin</exec_depend>
 

@@ -4,7 +4,7 @@
   <xacro:property name="wheel_radius" value="0.0325" />
   <xacro:property name="wheel_separation" value="0.169" />
   <xacro:property name="wheel_width" value="0.03040" />
-  <xacro:property name="wheel_mass" value="0.4" />
+  <xacro:property name="wheel_mass" value="9.1" />
   <xacro:property name="wheel_xoff" value="0.08" />
   <xacro:property name="wheel_yoff" value="-0.01" />
 
@@ -23,7 +23,7 @@
       <collision>
         <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
         <geometry>
-          <sphere radius="${wheel_radius}"/>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
         </geometry>
       </collision>
 
@@ -41,47 +41,27 @@
       <axis xyz="0 1 0"/>
       <parent link="${prefix}base_link"/>
       <child link="${prefix}${side}_wheel_link"/>
-      <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*(wheel_separation/2+wheel_yoff)} -0.003" rpy="0 0 0"/>
-      <limit effort="10.0" velocity="10.0"/>
+      <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*(wheel_separation/2+wheel_yoff)} ${-wheel_radius}" rpy="0 0 0"/>
     </joint>
 
-    <!-- Add joint damping/friction to reduce drift at rest -->
-    <gazebo reference="${prefix}${side}_wheel_joint">
-      <dynamics damping="0.01" friction="0.0"/>
-    </gazebo>
-
-    <!-- Wheel contact/friction tuning for Gazebo Classic -->
-    <!-- Wheel contact/friction tuning for Gazebo Classic -->
     <gazebo reference="${prefix}${side}_wheel_link">
       <surface>
         <friction>
           <ode>
-            <mu>0.8</mu>
-            <mu2>0.8</mu2>
-            <fdir1>1 0 0</fdir1>
-            <slip1>0.0</slip1>
-            <slip2>0.0</slip2>
+              <mu>1.0</mu>
+              <mu2>0.0</mu2>
           </ode>
         </friction>
-        <contact>
-          <ode>
-            <kp>1000000.0</kp>
-            <kd>100.0</kd>
-            <max_vel>0.1</max_vel>
-            <min_depth>0.001</min_depth>
-          </ode>
-        </contact>
       </surface>
-
       <visual>
-        <material>
-          <ambient>0.2 0.2 0.2 1.0</ambient>
-          <diffuse>0.2 0.2 0.2 1.0</diffuse>
-          <specular>0.2 0.2 0.2 1.0</specular>
-          <emissive>0.0 0.0 0.0 0.0</emissive>
-        </material>
+          <material>
+              <ambient>0.2 0.2 0.2 1.0</ambient>
+              <diffuse>0.2 0.2 0.2 1.0</diffuse>
+              <specular>0.2 0.2 0.2 1.0</specular>
+              <emissive>0.0 0.0 0.0 0.0</emissive>
+          </material>
       </visual>
-    </gazebo>
+  </gazebo>
 
   </xacro:macro>
 </robot>

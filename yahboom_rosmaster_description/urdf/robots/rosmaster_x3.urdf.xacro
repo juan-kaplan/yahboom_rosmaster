@@ -71,6 +71,22 @@
         <parameters>$(find yahboom_rosmaster_gazebo)/config/ros2_control.yaml</parameters>
       </plugin>
     </gazebo>
+
+    <!-- Planar move plugin for holonomic/mecanum movement -->
+    <gazebo>
+      <plugin name="object_controller" filename="libgazebo_ros_planar_move.so">
+        <ros>
+          <remapping>cmd_vel:=mecanum_drive_controller/reference_unstamped</remapping>
+          <remapping>odom:=mecanum_drive_controller/odom</remapping>
+        </ros>
+        <update_rate>100</update_rate>
+        <publish_rate>10</publish_rate>
+        <publish_odom>true</publish_odom>
+        <publish_odom_tf>true</publish_odom_tf>
+        <odometry_frame>odom</odometry_frame>
+        <robot_base_frame>base_footprint</robot_base_frame>
+      </plugin>
+    </gazebo>
   </xacro:if>
 
   <!-- ros2_control joints/interfaces for the robot -->
