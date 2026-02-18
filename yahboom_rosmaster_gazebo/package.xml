@@ -20,6 +20,7 @@
   <depend>ros2_controllers</depend>
   <depend>trajectory_msgs</depend>
   <depend>xacro</depend>
+  <exec_depend>topic_tools</exec_depend>
 
   <exec_depend>rqt_robot_steering</exec_depend>
   <exec_depend>rviz_imu_plugin</exec_depend>

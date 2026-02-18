@@ -51,12 +51,15 @@ source install/setup.bash
 ### 1. Launch Simulation
 
 ```bash
-# Empty world
+# Empty world (with RViz)
 ros2 launch yahboom_rosmaster_gazebo rosmaster_gazebo_classic.launch.py
 
 # Simple room (recommended for SLAM/Nav)
 ros2 launch yahboom_rosmaster_gazebo rosmaster_gazebo_classic.launch.py \
   world:=$(ros2 pkg prefix yahboom_rosmaster_gazebo)/share/yahboom_rosmaster_gazebo/worlds/simple_room.world
+
+# Without RViz
+ros2 launch yahboom_rosmaster_gazebo rosmaster_gazebo_classic.launch.py rviz:=false
 ```
 
 ### 2. Teleoperation
@@ -67,13 +70,13 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 
 Use keys: `u i o`, `j k l`, `m , .` to control the robot.
 
-### 3. RViz Visualization
+### Launch Arguments
 
-```bash
-rviz2 -d $(ros2 pkg prefix yahboom_rosmaster_description)/share/yahboom_rosmaster_description/rviz/yahboom_rosmaster_description.rviz
-```
-
-Set **Fixed Frame** to `odom` to track robot movement.
+| Argument | Default | Description |
+|----------|---------|-------------|
+| `world` | `empty.world` | Path to the Gazebo world file |
+| `rviz` | `true` | Launch RViz automatically |
+| `use_sim_time` | `true` | Use simulation time |
 
 ## Available Topics
 

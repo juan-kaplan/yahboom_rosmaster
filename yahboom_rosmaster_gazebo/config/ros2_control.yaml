@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-    update_rate: 100
+    update_rate: 50  # Hz (matched to upstream)
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -22,34 +22,26 @@ mecanum_drive_controller:
     rear_left_wheel_command_joint_name:   back_left_wheel_joint
     rear_right_wheel_command_joint_name:  back_right_wheel_joint
 
-
-
     # Humble expects these under kinematics.*
     kinematics:
       wheels_radius: 0.0325
       sum_of_robot_center_projection_on_X_Y_axis: 0.1545   # 0.08 + 0.0745
 
-    cmd_vel_timeout: 0.25
+    cmd_vel_timeout: 0.5  # matched to upstream (was 0.25)
 
+    # Velocity limits disabled to match upstream
     linear:
       x:
-        has_velocity_limits: true
-        max_velocity: 1.0   # m/s
-        min_velocity: -1.0
-        has_acceleration_limits: true
-        max_acceleration: 1.0
+        has_velocity_limits: false
+        has_acceleration_limits: false
+        has_jerk_limits: false
       y:
-        has_velocity_limits: true
-        max_velocity: 1.0   # m/s
-        min_velocity: -1.0
-        has_acceleration_limits: true
-        max_acceleration: 1.0
+        has_velocity_limits: false
+        has_acceleration_limits: false
+        has_jerk_limits: false
 
     angular:
       z:
-        has_velocity_limits: true
-        max_velocity: 2.0
-        has_acceleration_limits: true
-        max_acceleration: 2.0
-
-
+        has_velocity_limits: false
+        has_acceleration_limits: false
+        has_jerk_limits: false

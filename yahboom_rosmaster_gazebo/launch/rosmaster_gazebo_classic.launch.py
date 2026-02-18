@@ -1,11 +1,29 @@
 import os
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, TimerAction
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, TimerAction, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, Command
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
+
+
+def _launch_rviz(context):
+    """Conditionally launch RViz based on the 'rviz' launch argument."""
+    launch_rviz = context.launch_configurations.get("rviz", "true")
+    if launch_rviz.lower() in ("true", "1", "yes"):
+        pkg_gz = get_package_share_directory("yahboom_rosmaster_gazebo")
+        default_rviz = os.path.join(pkg_gz, "rviz", "gazebo.rviz")
+        use_sim_time = context.launch_configurations.get("use_sim_time", "true")
+        rviz_node = Node(
+            package="rviz2",
+            executable="rviz2",
+            arguments=["-d", default_rviz],
+            parameters=[{"use_sim_time": use_sim_time == "true"}],
+            output="screen",
+        )
+        return [TimerAction(period=2.0, actions=[rviz_node])]
+    return []
 
 
 def generate_launch_description():
@@ -21,6 +39,8 @@ def generate_launch_description():
 
     declare_use_sim_time = DeclareLaunchArgument("use_sim_time", default_value="true")
     declare_world = DeclareLaunchArgument("world", default_value=default_world)
+    declare_rviz = DeclareLaunchArgument("rviz", default_value="true",
+                                         description="Launch RViz (true/false)")
 
     robot_state_publisher = Node(
         package="robot_state_publisher",
@@ -83,6 +103,7 @@ def generate_launch_description():
     return LaunchDescription([
         declare_use_sim_time,
         declare_world,
+        declare_rviz,
         gazebo,
         robot_state_publisher,
         spawn,
@@ -90,4 +111,5 @@ def generate_launch_description():
         TimerAction(period=3.0, actions=[joint_state_broadcaster_spawner]),
         TimerAction(period=4.0, actions=[mecanum_controller_spawner]),
         TimerAction(period=5.0, actions=[cmd_vel_relay]),
+        OpaqueFunction(function=_launch_rviz),
     ])
