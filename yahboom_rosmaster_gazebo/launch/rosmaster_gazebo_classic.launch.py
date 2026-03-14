@@ -1,7 +1,7 @@
 import os
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, TimerAction, OpaqueFunction
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription, TimerAction, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, Command
 from launch_ros.actions import Node
@@ -81,7 +81,7 @@ def generate_launch_description():
         output="screen",
     )
 
-    # Start mecanum controller immediately
+    # Start mecanum controller
     mecanum_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -92,11 +92,10 @@ def generate_launch_description():
         output="screen",
     )
 
-    # Standardize input topic for users
-    cmd_vel_relay = Node(
-        package="topic_tools",
-        executable="relay",
-        arguments=["/cmd_vel", "/mecanum_drive_controller/reference_unstamped"],
+    # Convert Twist (/cmd_vel) to TwistStamped (/mecanum_drive_controller/cmd_vel)
+    twist_converter_script = os.path.join(pkg_gz, "scripts", "twist_to_stamped.py")
+    twist_converter = ExecuteProcess(
+        cmd=["python3", twist_converter_script],
         output="screen",
     )
 
@@ -110,6 +109,6 @@ def generate_launch_description():
 
         TimerAction(period=3.0, actions=[joint_state_broadcaster_spawner]),
         TimerAction(period=4.0, actions=[mecanum_controller_spawner]),
-        TimerAction(period=5.0, actions=[cmd_vel_relay]),
+        TimerAction(period=5.0, actions=[twist_converter]),
         OpaqueFunction(function=_launch_rviz),
     ])

@@ -18,7 +18,7 @@ find_package(gazebo_ros REQUIRED)
 
 # Copy necessary files to designated locations in the project
 install (
-  DIRECTORY config launch models rviz worlds
+  DIRECTORY config launch models rviz scripts worlds
   DESTINATION share/${PROJECT_NAME}
 )
 

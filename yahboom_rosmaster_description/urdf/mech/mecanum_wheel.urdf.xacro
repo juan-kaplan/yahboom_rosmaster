@@ -4,7 +4,7 @@
   <xacro:property name="wheel_radius" value="0.0325" />
   <xacro:property name="wheel_separation" value="0.169" />
   <xacro:property name="wheel_width" value="0.03040" />
-  <xacro:property name="wheel_mass" value="9.1" />
+  <xacro:property name="wheel_mass" value="0.15" />
   <xacro:property name="wheel_xoff" value="0.08" />
   <xacro:property name="wheel_yoff" value="-0.01" />
 
@@ -42,6 +42,7 @@
       <parent link="${prefix}base_link"/>
       <child link="${prefix}${side}_wheel_link"/>
       <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*(wheel_separation/2+wheel_yoff)} ${-wheel_radius}" rpy="0 0 0"/>
+      <dynamics damping="0.01" friction="0.0"/>
     </joint>
 
     <gazebo reference="${prefix}${side}_wheel_link">
@@ -49,9 +50,17 @@
         <friction>
           <ode>
               <mu>1.0</mu>
-              <mu2>0.0</mu2>
+              <mu2>0.5</mu2>
+              <fdir1>1 0 0</fdir1>
           </ode>
         </friction>
+        <contact>
+          <ode>
+            <kp>1000000.0</kp>
+            <kd>100.0</kd>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
       </surface>
       <visual>
           <material>
