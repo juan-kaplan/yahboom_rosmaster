@@ -2,8 +2,8 @@
 
 ![OS](https://img.shields.io/badge/Ubuntu-22.04-orange)
 ![ROS_2](https://img.shields.io/badge/ROS2-Humble-blue)
-![Gazebo Classic](https://img.shields.io/badge/Gazebo-Classic%2011-green)
 ![Gazebo Fortress](https://img.shields.io/badge/Gazebo-Fortress%206-blue)
+![Gazebo Classic](https://img.shields.io/badge/Gazebo-Classic%2011-yellow)
 
 ROS 2 Humble support for the **ROSMASTER X3** mecanum wheel robot by Yahboom.
 
@@ -15,8 +15,8 @@ ROS 2 Humble support for the **ROSMASTER X3** mecanum wheel robot by Yahboom.
 
 - **Mecanum wheel robot** with holonomic (omnidirectional) movement
 - **Two simulation backends**:
-  - **Gazebo Classic 11** — stable, widely supported
-  - **Gazebo Fortress 6** — physics-based mecanum drive using DART engine + `gz:expressed_in` friction direction locking for correct holonomic strafing
+  - **Gazebo Fortress 6** (recommended) — physics-based mecanum drive using DART engine + `gz:expressed_in` friction direction locking for correct holonomic strafing
+  - **Gazebo Classic 11** — forward/backward and rotation work, but holonomic strafing is broken due to a known ODE bug ([gazebo-classic #463](https://github.com/gazebosim/gazebo-classic/issues/463)): `fdir1` rotates with the wheel frame instead of staying fixed to the chassis
 - **Sensors**: RGB-D Camera, 2D LiDAR, IMU
 - **ROS 2 Control** integration (`gz_ros2_control` for Fortress, `gazebo_ros2_control` for Classic)
 - **Nav2 & SLAM** ready configuration
@@ -76,7 +76,9 @@ ros2 control list_controllers
 #   mecanum_drive_controller[mecanum_drive_controller/MecanumDriveController] active
 ```
 
-### Gazebo Classic
+### Gazebo Classic (limited — strafing broken)
+
+> **Note**: Forward/backward and rotation work. Holonomic strafing (Shift+J/L) does not work correctly due to a [known ODE bug](https://github.com/gazebosim/gazebo-classic/issues/463). Use Fortress for full mecanum functionality.
 
 ```bash
 # Empty world (with RViz)
