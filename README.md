@@ -2,20 +2,23 @@
 
 ![OS](https://img.shields.io/badge/Ubuntu-22.04-orange)
 ![ROS_2](https://img.shields.io/badge/ROS2-Humble-blue)
-![Gazebo](https://img.shields.io/badge/Gazebo-Classic%2011-green)
+![Gazebo Classic](https://img.shields.io/badge/Gazebo-Classic%2011-green)
+![Gazebo Fortress](https://img.shields.io/badge/Gazebo-Fortress%206-blue)
 
 ROS 2 Humble support for the **ROSMASTER X3** mecanum wheel robot by Yahboom.
 
-> This repository is forked from [automaticaddison/yahboom_rosmaster](https://github.com/automaticaddison/yahboom_rosmaster) (Jazzy) and adapted for ROS 2 Humble with Gazebo Classic.
+> This repository is forked from [automaticaddison/yahboom_rosmaster](https://github.com/automaticaddison/yahboom_rosmaster) (Jazzy) and adapted for ROS 2 Humble with both Gazebo Classic and Gazebo Fortress.
 
 ![ROSMASTER X3 in Gazebo](https://automaticaddison.com/wp-content/uploads/2024/11/gazebo-800-square-mecanum-controller.gif)
 
 ## Features
 
 - **Mecanum wheel robot** with holonomic (omnidirectional) movement
-- **Gazebo Classic** simulation with realistic physics
+- **Two simulation backends**:
+  - **Gazebo Classic 11** — stable, widely supported
+  - **Gazebo Fortress 6** — physics-based mecanum drive using DART engine + `gz:expressed_in` friction direction locking for correct holonomic strafing
 - **Sensors**: RGB-D Camera, 2D LiDAR, IMU
-- **ROS 2 Control** integration for wheel velocity control
+- **ROS 2 Control** integration (`gz_ros2_control` for Fortress, `gazebo_ros2_control` for Classic)
 - **Nav2 & SLAM** ready configuration
 - Multiple world files for testing
 
@@ -23,7 +26,13 @@ ROS 2 Humble support for the **ROSMASTER X3** mecanum wheel robot by Yahboom.
 
 - Ubuntu 22.04
 - ROS 2 Humble
-- Gazebo Classic 11
+- Gazebo Classic 11 **and/or** Gazebo Fortress 6
+
+### Install Gazebo Fortress
+
+```bash
+sudo apt install ros-humble-ros-gz ros-humble-gz-ros2-control ros-humble-gz-ros2-control-demos
+```
 
 ## Installation
 
@@ -48,7 +57,26 @@ source install/setup.bash
 
 ## Quick Start
 
-### 1. Launch Simulation
+### Gazebo Fortress (recommended — physics-based mecanum)
+
+```bash
+# Launch with RViz
+ros2 launch yahboom_rosmaster_gazebo rosmaster_gazebo_fortress.launch.py
+
+# Without RViz
+ros2 launch yahboom_rosmaster_gazebo rosmaster_gazebo_fortress.launch.py rviz:=false
+```
+
+Verify the controllers loaded successfully (~10 seconds after launch):
+
+```bash
+ros2 control list_controllers
+# Expected output:
+#   joint_state_broadcaster[joint_state_broadcaster/JointStateBroadcaster] active
+#   mecanum_drive_controller[mecanum_drive_controller/MecanumDriveController] active
+```
+
+### Gazebo Classic
 
 ```bash
 # Empty world (with RViz)
@@ -62,13 +90,13 @@ ros2 launch yahboom_rosmaster_gazebo rosmaster_gazebo_classic.launch.py \
 ros2 launch yahboom_rosmaster_gazebo rosmaster_gazebo_classic.launch.py rviz:=false
 ```
 
-### 2. Teleoperation
+### Teleoperation
 
 ```bash
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 
-Use keys: `u i o`, `j k l`, `m , .` to control the robot.
+Use keys: `u i o`, `j k l`, `m , .` to move. **Shift+J / Shift+L** strafes left/right (holonomic).
 
 ### Launch Arguments
 
@@ -82,12 +110,16 @@ Use keys: `u i o`, `j k l`, `m , .` to control the robot.
 
 | Topic | Type | Description |
 |-------|------|-------------|
-| `/cmd_vel` | `geometry_msgs/Twist` | Velocity commands |
+| `/cmd_vel` | `geometry_msgs/Twist` | Velocity commands (converted to TwistStamped internally) |
 | `/scan` | `sensor_msgs/LaserScan` | LiDAR data |
 | `/imu/data` | `sensor_msgs/Imu` | IMU readings |
-| `/cam_1/image_raw` | `sensor_msgs/Image` | RGB camera |
+| `/cam_1/color/image_raw` | `sensor_msgs/Image` | RGB camera |
 | `/cam_1/depth/image_raw` | `sensor_msgs/Image` | Depth image |
 | `/mecanum_drive_controller/odom` | `nav_msgs/Odometry` | Odometry |
+
+## Physics Notes (Fortress)
+
+The Fortress simulation uses the DART physics engine with sphere wheel collisions and `gz:expressed_in="base_link"` friction direction vectors. This correctly models the asymmetric friction of mecanum rollers, producing genuine holonomic motion. Odometry is computed from wheel encoder positions (closed-loop). Real-world effects like encoder noise and surface irregularities are not simulated; to account for this in navigation, tune `pose_covariance_diagonal` and `twist_covariance_diagonal` in `config/ros2_control.yaml`.
 
 ## Packages
 

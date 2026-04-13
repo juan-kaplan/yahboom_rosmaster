@@ -20,6 +20,8 @@
         gazebo_material_diffuse:='0.1 0.1 0.1 1'
         gazebo_material_specular:='0.1 0.1 0.1 1'
         update_rate:='15.0'
+        gyro_noise_stddev:='0.00873'
+        accel_noise_stddev:='0.00175'
         topic_name:='imu/data'
         always_on:=true
         visualize:=false">
@@ -72,6 +74,18 @@
                     </ros>
                     <initial_orientation_as_reference>false</initial_orientation_as_reference>
                 </plugin>
+                <imu>
+                    <angular_velocity>
+                        <x><noise type="gaussian"><mean>0</mean><stddev>${gyro_noise_stddev}</stddev></noise></x>
+                        <y><noise type="gaussian"><mean>0</mean><stddev>${gyro_noise_stddev}</stddev></noise></y>
+                        <z><noise type="gaussian"><mean>0</mean><stddev>${gyro_noise_stddev}</stddev></noise></z>
+                    </angular_velocity>
+                    <linear_acceleration>
+                        <x><noise type="gaussian"><mean>0</mean><stddev>${accel_noise_stddev}</stddev></noise></x>
+                        <y><noise type="gaussian"><mean>0</mean><stddev>${accel_noise_stddev}</stddev></noise></y>
+                        <z><noise type="gaussian"><mean>0</mean><stddev>${accel_noise_stddev}</stddev></noise></z>
+                    </linear_acceleration>
+                </imu>
                 <update_rate>${update_rate}</update_rate>
                 <always_on>${always_on}</always_on>
                 <visualize>${visualize}</visualize>

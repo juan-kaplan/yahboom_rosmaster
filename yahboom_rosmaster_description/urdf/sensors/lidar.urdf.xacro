@@ -31,6 +31,8 @@
     min_range:='0.20'
     max_range:='30.0'
     range_resolution:='0.013'
+    noise_mean:='0.0'
+    noise_stddev:='0.02'
     topic_name:='scan'
     always_on:=true
     visualize:=false
@@ -117,6 +119,11 @@
             <max>${max_range}</max>
             <resolution>${range_resolution}</resolution>
           </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>${noise_mean}</mean>
+            <stddev>${noise_stddev}</stddev>
+          </noise>
         </ray>
         <gz_frame_id>${prefix}${frame_id}</gz_frame_id>
       </sensor>

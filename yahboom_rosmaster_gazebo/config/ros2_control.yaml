@@ -1,6 +1,7 @@
 controller_manager:
   ros__parameters:
     update_rate: 50  # Hz
+    use_sim_time: true
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -17,8 +18,10 @@ mecanum_drive_controller:
     back_right_joint_name: back_right_wheel_joint
 
     # Robot physical parameters
+    # wheel_base = 2 * wheel_xoff = 2 * 0.08 = 0.16 m (front-to-back wheel centre distance)
+    # wheel_separation = 2 * (wheel_separation_urdf/2 + wheel_yoff) = 2 * (0.0845 - 0.01) = 0.149 m
     wheel_base: 0.16
-    wheel_separation: 0.169
+    wheel_separation: 0.149
     wheel_radius: 0.0325
     wheel_separation_multiplier: 1.0
     front_left_wheel_radius_multiplier: 1.0
@@ -45,13 +48,29 @@ mecanum_drive_controller:
     velocity_rolling_window_size: 10
     publish_rate: 50.0
 
-    # Velocity limits (none for now — tune later if needed)
-    linear.x.has_velocity_limits: false
-    linear.x.has_acceleration_limits: false
+    # Velocity and acceleration limits matching real ROSMASTER X3
+    # Max linear speed ~0.5 m/s (520-motor gearbox at 6V), max angular ~1.5 rad/s
+    # Acceleration limits give a 0→max ramp of ~0.5 s, matching the real robot feel
+    linear.x.has_velocity_limits: true
+    linear.x.has_acceleration_limits: true
     linear.x.has_jerk_limits: false
-    linear.y.has_velocity_limits: false
-    linear.y.has_acceleration_limits: false
+    linear.x.max_velocity: 0.5       # m/s — real robot top speed
+    linear.x.min_velocity: -0.5
+    linear.x.max_acceleration: 1.0   # m/s² — 0→max in ~0.5 s
+    linear.x.min_acceleration: -1.0
+
+    linear.y.has_velocity_limits: true
+    linear.y.has_acceleration_limits: true
     linear.y.has_jerk_limits: false
-    angular.z.has_velocity_limits: false
-    angular.z.has_acceleration_limits: false
+    linear.y.max_velocity: 0.5       # m/s — strafe limited same as forward
+    linear.y.min_velocity: -0.5
+    linear.y.max_acceleration: 1.0
+    linear.y.min_acceleration: -1.0
+
+    angular.z.has_velocity_limits: true
+    angular.z.has_acceleration_limits: true
     angular.z.has_jerk_limits: false
+    angular.z.max_velocity: 1.5      # rad/s — ~86°/s in place rotation
+    angular.z.min_velocity: -1.5
+    angular.z.max_acceleration: 3.0  # rad/s²
+    angular.z.min_acceleration: -3.0

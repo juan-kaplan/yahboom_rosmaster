@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" xmlns:gz="http://gazebosim.org/schema">
 
   <xacro:property name="wheel_radius" value="0.0325" />
   <xacro:property name="wheel_separation" value="0.169" />
   <xacro:property name="wheel_width" value="0.03040" />
-  <xacro:property name="wheel_mass" value="0.15" />
+  <xacro:property name="wheel_mass" value="0.05" />  <!-- Real 65mm mecanum wheel ~40-60 g. Old 0.15 kg was 3× too heavy. -->
   <xacro:property name="wheel_xoff" value="0.08" />
   <xacro:property name="wheel_yoff" value="-0.01" />
 
-  <xacro:macro name="mecanum_wheel" params="prefix side x_reflect y_reflect">
+  <xacro:macro name="mecanum_wheel" params="prefix side x_reflect y_reflect fdir1:='1 0 0' use_ignition:='false'">
     <link name="${prefix}${side}_wheel_link">
       <visual>
         <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
@@ -20,12 +20,24 @@
         </material>
       </visual>
 
-      <collision>
-        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
-        <geometry>
-          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
-        </geometry>
-      </collision>
+      <!-- Fortress: sphere gives a single contact point, required for gz:expressed_in to work -->
+      <xacro:if value="${use_ignition}">
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <sphere radius="${wheel_radius}"/>
+          </geometry>
+        </collision>
+      </xacro:if>
+      <!-- Classic: cylinder collision (unchanged) -->
+      <xacro:unless value="${use_ignition}">
+        <collision>
+          <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+          <geometry>
+            <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+          </geometry>
+        </collision>
+      </xacro:unless>
 
       <inertial>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -42,7 +54,7 @@
       <parent link="${prefix}base_link"/>
       <child link="${prefix}${side}_wheel_link"/>
       <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*(wheel_separation/2+wheel_yoff)} ${-wheel_radius}" rpy="0 0 0"/>
-      <dynamics damping="0.01" friction="0.0"/>
+      <dynamics damping="0.1" friction="0.0"/>  <!-- 0.1 N·m·s/rad models 520-motor gearbox back-drive resistance -->
     </joint>
 
     <gazebo reference="${prefix}${side}_wheel_link">
@@ -50,8 +62,13 @@
         <friction>
           <ode>
               <mu>1.0</mu>
-              <mu2>0.5</mu2>
-              <fdir1>1 0 0</fdir1>
+              <mu2>0.0</mu2>
+              <xacro:if value="${use_ignition}">
+                <fdir1 gz:expressed_in="${prefix}base_link">${fdir1}</fdir1>
+              </xacro:if>
+              <xacro:unless value="${use_ignition}">
+                <fdir1>${fdir1}</fdir1>
+              </xacro:unless>
           </ode>
         </friction>
         <contact>
